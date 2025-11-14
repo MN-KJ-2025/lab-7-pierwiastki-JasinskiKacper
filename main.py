@@ -25,14 +25,16 @@ def roots_20(coef: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
             - Wektor miejsc zerowych (m,).
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    if  not isinstance(coef, np.ndarray):
+    if not isinstance(coef, np.ndarray):
+        return None
+    if coef.ndim != 1:
         return None
     
-    random_noise = np.random.random_sample(coef.shape) * 1e-10
-    roots_noise = nppoly.polyroots(coef + random_noise)
+    random_noise = np.random.normal(0, 1, coef.shape) * 1e-10
+    coef_noised = coef + random_noise
     roots = nppoly.polyroots(coef)
 
-    return (roots_noise, roots)
+    return (coef_noised, roots)
     pass
 
 
@@ -58,15 +60,20 @@ def frob_a(coef: np.ndarray) -> np.ndarray | None:
     """
     if not isinstance(coef, np.ndarray):
         return None
-    
-    n = len(coef)
+    if coef.ndim != 1:
+        return None
+    if len(coef) <= 1:
+        return None
+
+    n = (len(coef) - 1)
     
     matrix = np.zeros((n, n))
     for i in range(0, n - 1):
         matrix[i, i + 1] = 1
     
-    for j in range(0, n):
-        matrix[-1, j] = -coef[j] / coef[-1]
+    a_n = coef[-1]
+    for j in range(n):
+        matrix[-1, j] = -coef[j] / a_n
 
     return matrix
     pass
@@ -84,4 +91,16 @@ def is_nonsingular(A: np.ndarray) -> bool | None:
             wypadku `False`.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
+    if not isinstance(A, np.ndarray):
+        return None
+    if A.ndim != 2:
+        return None
+    if A.shape[0] != A.shape[1]:
+        return None
+
+    
+    if np.linalg.det(A) == 0:
+        return False
+    else:
+        return True
     pass
