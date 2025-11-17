@@ -32,7 +32,7 @@ def roots_20(coef: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
     
     random_noise = np.random.normal(0, 1, coef.shape) * 1e-10
     coef_noised = coef + random_noise
-    roots = nppoly.polyroots(coef)
+    roots = nppoly.polyroots(coef_noised)
 
     return (coef_noised, roots)
     pass
@@ -61,7 +61,7 @@ def frob_a(coef: np.ndarray) -> np.ndarray | None:
     if not isinstance(coef, np.ndarray):
         return None
     if coef.ndim != 1:
-        return None
+        return None 
     if len(coef) <= 1:
         return None
 
@@ -99,8 +99,7 @@ def is_nonsingular(A: np.ndarray) -> bool | None:
         return None
 
     
-    if np.linalg.det(A) == 0:
-        return False
-    else:
-        return True
+    det = np.linalg.det(A)
+    eps = 1e-12
+    return abs(det) > eps
     pass
